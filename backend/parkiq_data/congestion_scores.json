@@ -1,0 +1,88 @@
+{
+  "junctions": [
+    {
+      "junction": "BTP051 - Safina Plaza Junction",
+      "violation_count": 15449,
+      "congestion_score": 9.03,
+      "lat": 12.98121,
+      "lng": 77.6087
+    },
+    {
+      "junction": "BTP082 - KR Market Junction",
+      "violation_count": 11538,
+      "congestion_score": 7.16,
+      "lat": 12.96442,
+      "lng": 77.57724
+    },
+    {
+      "junction": "BTP040 - Elite Junction",
+      "violation_count": 10718,
+      "congestion_score": 6.7,
+      "lat": 12.9766,
+      "lng": 77.5766
+    },
+    {
+      "junction": "BTP044 - Sagar Theatre Junction",
+      "violation_count": 10549,
+      "congestion_score": 6.83,
+      "lat": 12.97494,
+      "lng": 77.5789
+    },
+    {
+      "junction": "BTP211 - Central Street Junction",
+      "violation_count": 5388,
+      "congestion_score": 4.77,
+      "lat": 12.98337,
+      "lng": 77.60345
+    },
+    {
+      "junction": "BTP058 - Subbanna Junction",
+      "violation_count": 5189,
+      "congestion_score": 4.94,
+      "lat": 12.97902,
+      "lng": 77.57866
+    },
+    {
+      "junction": "BTP027 - Modi Bridge Junction",
+      "violation_count": 4584,
+      "congestion_score": 3.68,
+      "lat": 12.9989,
+      "lng": 77.54942
+    },
+    {
+      "junction": "BTP020 - Hosahalli Metro Station",
+      "violation_count": 4101,
+      "congestion_score": 3.2,
+      "lat": 12.97414,
+      "lng": 77.54529
+    },
+    {
+      "junction": "BTP057 - Anand Rao Junction",
+      "violation_count": 3935,
+      "congestion_score": 4.38,
+      "lat": 12.9794,
+      "lng": 77.57439
+    },
+    {
+      "junction": "BTP080 - NR Road, SP Road Junction",
+      "violation_count": 3681,
+      "congestion_score": 3.61,
+      "lat": 12.9644,
+      "lng": 77.58317
+    },
+    {
+      "junction": "BTP045 - Danvanthri Road Junction",
+      "violation_count": 3181,
+      "congestion_score": 3.74,
+      "lat": 12.97707,
+      "lng": 77.57479
+    },
+    {
+      "junction": "BTP001 - 10th Cross, Dr. Rajkumar Road",
+      "violation_count": 2812,
+      "congestion_score": 3.56,
+      "lat": 13.00781,
+      "lng": 77.55465
+    }
+  ]
+}

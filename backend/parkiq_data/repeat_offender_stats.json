@@ -1,0 +1,10 @@
+{
+  "total_unique_vehicles": 231890,
+  "vehicles_with_repeat_violations": 35587,
+  "repeat_vehicle_share_pct": 15.3,
+  "violations_from_repeat_vehicles": 102147,
+  "violations_from_repeat_vehicles_share_pct": 34.2,
+  "top10pct_vehicles_violation_share_pct": 25.9,
+  "most_frequent_vehicle_violation_count": 55,
+  "note": "vehicle_number is anonymized but appears consistently mapped per real vehicle, not re-randomized per row -- repeat-offender tracking is genuinely supported by this dataset."
+}

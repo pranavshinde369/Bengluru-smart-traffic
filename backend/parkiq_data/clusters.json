@@ -1,0 +1,144 @@
+{
+  "clusters": [
+    {
+      "cluster_id": 49,
+      "lat": 12.93355,
+      "lng": 77.69102,
+      "sampled_point_count": 1313,
+      "estimated_full_dataset_count": 6531
+    },
+    {
+      "cluster_id": 1,
+      "lat": 13.18758,
+      "lng": 77.68188,
+      "sampled_point_count": 1108,
+      "estimated_full_dataset_count": 5511
+    },
+    {
+      "cluster_id": 145,
+      "lat": 12.97435,
+      "lng": 77.54569,
+      "sampled_point_count": 922,
+      "estimated_full_dataset_count": 4586
+    },
+    {
+      "cluster_id": 165,
+      "lat": 12.99973,
+      "lng": 77.54973,
+      "sampled_point_count": 890,
+      "estimated_full_dataset_count": 4427
+    },
+    {
+      "cluster_id": 201,
+      "lat": 12.96408,
+      "lng": 77.57681,
+      "sampled_point_count": 728,
+      "estimated_full_dataset_count": 3621
+    },
+    {
+      "cluster_id": 163,
+      "lat": 13.0119,
+      "lng": 77.55436,
+      "sampled_point_count": 705,
+      "estimated_full_dataset_count": 3507
+    },
+    {
+      "cluster_id": 52,
+      "lat": 13.03563,
+      "lng": 77.58909,
+      "sampled_point_count": 696,
+      "estimated_full_dataset_count": 3462
+    },
+    {
+      "cluster_id": 183,
+      "lat": 12.98104,
+      "lng": 77.61022,
+      "sampled_point_count": 639,
+      "estimated_full_dataset_count": 3178
+    },
+    {
+      "cluster_id": 55,
+      "lat": 13.07131,
+      "lng": 77.5881,
+      "sampled_point_count": 631,
+      "estimated_full_dataset_count": 3139
+    },
+    {
+      "cluster_id": 179,
+      "lat": 12.96457,
+      "lng": 77.58395,
+      "sampled_point_count": 599,
+      "estimated_full_dataset_count": 2980
+    },
+    {
+      "cluster_id": 189,
+      "lat": 12.97897,
+      "lng": 77.57851,
+      "sampled_point_count": 578,
+      "estimated_full_dataset_count": 2875
+    },
+    {
+      "cluster_id": 117,
+      "lat": 12.96505,
+      "lng": 77.53847,
+      "sampled_point_count": 554,
+      "estimated_full_dataset_count": 2756
+    },
+    {
+      "cluster_id": 144,
+      "lat": 12.97359,
+      "lng": 77.55104,
+      "sampled_point_count": 542,
+      "estimated_full_dataset_count": 2696
+    },
+    {
+      "cluster_id": 171,
+      "lat": 12.98144,
+      "lng": 77.60871,
+      "sampled_point_count": 539,
+      "estimated_full_dataset_count": 2681
+    },
+    {
+      "cluster_id": 141,
+      "lat": 12.98407,
+      "lng": 77.60354,
+      "sampled_point_count": 522,
+      "estimated_full_dataset_count": 2597
+    },
+    {
+      "cluster_id": 41,
+      "lat": 13.00825,
+      "lng": 77.69554,
+      "sampled_point_count": 503,
+      "estimated_full_dataset_count": 2502
+    },
+    {
+      "cluster_id": 105,
+      "lat": 12.94384,
+      "lng": 77.57141,
+      "sampled_point_count": 492,
+      "estimated_full_dataset_count": 2447
+    },
+    {
+      "cluster_id": 161,
+      "lat": 13.00848,
+      "lng": 77.55461,
+      "sampled_point_count": 470,
+      "estimated_full_dataset_count": 2338
+    },
+    {
+      "cluster_id": 184,
+      "lat": 12.97014,
+      "lng": 77.57584,
+      "sampled_point_count": 469,
+      "estimated_full_dataset_count": 2333
+    },
+    {
+      "cluster_id": 23,
+      "lat": 12.84291,
+      "lng": 77.64757,
+      "sampled_point_count": 455,
+      "estimated_full_dataset_count": 2263
+    }
+  ]
+}

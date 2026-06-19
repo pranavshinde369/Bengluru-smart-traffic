@@ -1,0 +1,117 @@
+{
+  "junction": "BTP051 - Safina Plaza Junction",
+  "found_drop_event": true,
+  "drop_date": "2023-11-21",
+  "pre_drop_baseline_per_day": 158.5,
+  "days_to_80pct_recovery": 5,
+  "series": [
+    {
+      "date": "2023-11-16",
+      "violations": 129
+    },
+    {
+      "date": "2023-11-17",
+      "violations": 402
+    },
+    {
+      "date": "2023-11-18",
+      "violations": 416
+    },
+    {
+      "date": "2023-11-19",
+      "violations": 377
+    },
+    {
+      "date": "2023-11-20",
+      "violations": 152
+    },
+    {
+      "date": "2023-11-21",
+      "violations": 52
+    },
+    {
+      "date": "2023-11-22",
+      "violations": 85
+    },
+    {
+      "date": "2023-11-23",
+      "violations": 153
+    },
+    {
+      "date": "2023-11-24",
+      "violations": 99
+    },
+    {
+      "date": "2023-11-25",
+      "violations": 52
+    },
+    {
+      "date": "2023-11-26",
+      "violations": 178
+    },
+    {
+      "date": "2023-11-27",
+      "violations": 165
+    },
+    {
+      "date": "2023-11-28",
+      "violations": 74
+    },
+    {
+      "date": "2023-11-29",
+      "violations": 29
+    },
+    {
+      "date": "2023-11-30",
+      "violations": 5
+    },
+    {
+      "date": "2023-12-01",
+      "violations": 23
+    },
+    {
+      "date": "2023-12-02",
+      "violations": 38
+    },
+    {
+      "date": "2023-12-03",
+      "violations": 149
+    },
+    {
+      "date": "2023-12-04",
+      "violations": 50
+    },
+    {
+      "date": "2023-12-05",
+      "violations": 84
+    },
+    {
+      "date": "2023-12-06",
+      "violations": 61
+    },
+    {
+      "date": "2023-12-07",
+      "violations": 16
+    },
+    {
+      "date": "2023-12-08",
+      "violations": 57
+    },
+    {
+      "date": "2023-12-09",
+      "violations": 93
+    },
+    {
+      "date": "2023-12-10",
+      "violations": 157
+    },
+    {
+      "date": "2023-12-11",
+      "violations": 254
+    },
+    {
+      "date": "2023-12-12",
+      "violations": 119
+    }
+  ]
+}
