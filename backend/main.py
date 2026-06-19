@@ -77,6 +77,7 @@ app.add_middleware(
 VEHICLE_CLASSES   = [2, 3, 5, 7]           # car, motorcycle, bus, truck
 VIDEO_PATH        = Path(__file__).parent / "traffic_feed.mp4"
 MODEL_PATH        = "yolov8n.pt"
+GEOFENCE_FILE     = Path(__file__).parent / "geofence_zones.json"   # persisted drawn zones
 CARBON_PER_VEH_SEC = 0.0028                # kg CO2 per vehicle per idle-second saved
 BASELINE_GREEN    = 60                     # legacy fixed signal (seconds)
 CLASS_NAMES       = {2: "CAR", 3: "BIKE", 5: "BUS", 7: "TRUCK"}
@@ -240,6 +241,44 @@ def get_active_polygon() -> Polygon:
     with settings_lock:
         junction = settings["active_junction"]
     return GEOFENCE_ZONES.get(junction)
+
+def _polygon_points(poly) -> list:
+    """Convert a Polygon (real shapely or the no-shapely fallback) into a
+    plain [{"x":.., "y":..}, ...] list -- same shape /api/geofence-zones
+    already returns, so the saved file and the API stay in sync."""
+    if hasattr(poly, "exterior"):
+        coords = list(poly.exterior.coords)[:-1]   # drop shapely's closing duplicate point
+    else:
+        coords = poly.coords
+    return [{"x": int(round(p[0])), "y": int(round(p[1]))} for p in coords]
+
+def _save_geofence_zones():
+    """Persist every zone in GEOFENCE_ZONES to disk so a freshly drawn
+    polygon survives a server restart instead of reverting to the
+    hardcoded defaults above."""
+    try:
+        data = {name: _polygon_points(poly) for name, poly in GEOFENCE_ZONES.items()}
+        with open(GEOFENCE_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+    except Exception as e:
+        print(f"[geofence] failed to save {GEOFENCE_FILE.name}: {e}")
+
+def _load_geofence_zones():
+    """Load any previously saved zones at startup, overriding the
+    hardcoded defaults for whichever junction names were saved. Safe to
+    call even if the file doesn't exist yet (first run)."""
+    if not GEOFENCE_FILE.exists():
+        return
+    try:
+        with open(GEOFENCE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        for name, points in data.items():
+            if len(points) >= 3:
+                coords = [(p["x"], p["y"]) for p in points]
+                GEOFENCE_ZONES[name] = Polygon(coords)
+        print(f"[geofence] loaded {len(data)} saved zone(s) from {GEOFENCE_FILE.name}")
+    except Exception as e:
+        print(f"[geofence] failed to load {GEOFENCE_FILE.name}: {e}")
 
 def is_in_zone(cx: int, cy: int, zone: tuple, junction_name: str) -> bool:
     if junction_name in GEOFENCE_ZONES:
@@ -548,6 +587,7 @@ def video_processing_loop():
 async def startup_event():
     _seed_carbon_history()
     _load_parkiq_data()
+    _load_geofence_zones()
     thread = threading.Thread(target=video_processing_loop, daemon=True)
     thread.start()
 
@@ -657,6 +697,7 @@ def update_settings(body: dict = Body(...)):
             if len(poly_points) >= 3:
                 coords = [(int(p["x"]), int(p["y"])) for p in poly_points]
                 GEOFENCE_ZONES[junction] = Polygon(coords)
+                _save_geofence_zones()
                 
     return JSONResponse({
         "status":  "ok",
