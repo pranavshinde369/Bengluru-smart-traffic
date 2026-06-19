@@ -84,7 +84,7 @@ export function AnalyticsSection() {
 
   useEffect(() => {
     const poll = () => {
-      fetch('http://localhost:8000/api/rl-stats')
+      fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/rl-stats`)
         .then(r => r.json())
         .then((data: RLStats) => {
           setRlStats(data);

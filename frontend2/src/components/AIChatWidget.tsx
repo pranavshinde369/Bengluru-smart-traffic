@@ -15,7 +15,7 @@ export function AIChatWidget() {
     setAnswer('');
     setError('');
     try {
-      const res = await fetch('http://localhost:8000/api/ask', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: question.trim() }),

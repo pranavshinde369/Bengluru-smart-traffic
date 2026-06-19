@@ -10,6 +10,14 @@ export function VideoFeed() {
     return () => clearInterval(t);
   }, []);
 
+  // Auto-retry connection every 3 seconds if error occurs
+  useEffect(() => {
+    if (error) {
+      const retryTimer = setTimeout(() => setError(false), 3000);
+      return () => clearTimeout(retryTimer);
+    }
+  }, [error]);
+
   return (
     <div className="dashboard-card relative overflow-hidden">
       <div className="flex items-center justify-between mb-3">
@@ -28,7 +36,7 @@ export function VideoFeed() {
           </div>
         ) : (
           <img
-            src="http://localhost:8000/api/video-feed"
+            src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/video-feed`}
             alt="Live CCTV Feed"
             className="w-full h-full object-cover"
             onError={() => setError(true)}
