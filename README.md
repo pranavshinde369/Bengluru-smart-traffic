@@ -6,6 +6,11 @@
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-blue)](https://github.com/ultralytics/ultralytics)
 
+## 🚀 Live Demo & Deployment
+- **Frontend Dashboard:** [https://btp-frontend-53119045662.us-central1.run.app](https://btp-frontend-53119045662.us-central1.run.app)
+- **Backend API:** [https://btp-backend-53119045662.us-central1.run.app/docs](https://btp-backend-53119045662.us-central1.run.app/docs)
+*(Deployed on Google Cloud Run with upgraded 2GB memory for YOLOv8/PyTorch inference)*
+
 ## 1. Project Title and Description
 **BTP-Niyantran (v2.0)** is an advanced, AI-driven traffic intelligence and parking analytics platform tailored for the Bengaluru Traffic Police (BTP). Building upon real-time edge computing, the v2.0 update introduces **ParkIQ**—a comprehensive suite for urban mobility analytics—along with Dwell-Timer state machines, hazard-light heuristics, and Shapely-based polygon geofencing. 
 
@@ -15,7 +20,7 @@ The system utilizes existing CCTV infrastructure to reduce congestion, automatic
 - **ParkIQ Analytics (Phase 3):** HDBSCAN-based clustering of violations, BPR (Bureau of Public Roads) congestion impact scoring, Deterrence Decay curve analysis, and spatio-temporal heatmaps.
 - **Dwell-Timer State Machine (Phase 1):** Differentiates between moving traffic, temporary stops (grace period), and strict violations using real-time object tracking.
 - **Hazard-Light Exception Heuristic:** Automatically detects flickering hazard lights to exempt broken-down vehicles from unauthorized parking E-Challans.
-- **Shapely Polygon Geofencing:** Replaced basic rectangular bounding boxes with precise, junction-specific polygon geofences to reduce false positives.
+- **Interactive Polygon Geofencing:** Replaced basic rectangular bounding boxes with a live UI drawing tool. Draw precise, junction-specific polygon geofences directly on the dashboard to reduce false positives (synced instantly with the backend).
 - **Priority Corridor Mode:** A one-click fail-safe to prioritize VIP corridors, ambulances, or massive crowds (overrides standard RL signal).
 - **Dynamic RL Optimizer:** Adaptive signal control based on real-time vehicle density to reduce commute times and emissions.
 - **Auto E-Challan Generation:** Generates real-time infraction logs with unique challan IDs (e.g., `BTP-YYYYMMDD-XXXX`).
