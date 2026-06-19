@@ -29,7 +29,7 @@ const CameraFeed = () => {
 
   const fetchVehicles = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/traffic-data');
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/traffic-data`);
       if (!res.ok) return;
       const json = await res.json();
       setVehicleCount(json.vehicle_count ?? 0);
@@ -107,7 +107,7 @@ const CameraFeed = () => {
                 </div>
               ) : (
                 <img
-                  src="http://localhost:8000/api/video-feed"
+                  src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/video-feed`}
                   alt="Live CCTV Feed"
                   className="w-full h-full object-cover"
                   onError={() => setError(true)}

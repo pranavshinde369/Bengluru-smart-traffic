@@ -33,7 +33,7 @@ const allJunctions = [
 
 const Settings = () => {
   const { toast } = useToast();
-  const [backendUrl, setBackendUrl] = useState(() => localStorage.getItem('settings_backendUrl') || 'http://localhost:8000');
+  const [backendUrl, setBackendUrl] = useState(() => localStorage.getItem('settings_backendUrl') || (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'));
   const [confidence, setConfidence] = useState<number[]>(() => {
     const saved = localStorage.getItem('settings_confidence');
     return saved ? [parseFloat(saved)] : [0.45];
@@ -69,7 +69,7 @@ const Settings = () => {
   };
 
   const handleReset = () => {
-    setBackendUrl('http://localhost:8000');
+    setBackendUrl(import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000');
     setConfidence([0.45]);
     setZones(defaultZones.map(z => ({ ...z })));
     setOverrideSignalTime(45);
@@ -107,7 +107,7 @@ const Settings = () => {
                 id="backend-url"
                 value={backendUrl}
                 onChange={(e) => setBackendUrl(e.target.value)}
-                placeholder="http://localhost:8000"
+                placeholder={import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}
               />
               <p className="text-xs text-muted-foreground">
                 Base URL for the Python AI backend server.

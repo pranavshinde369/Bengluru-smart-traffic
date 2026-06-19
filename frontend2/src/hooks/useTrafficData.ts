@@ -26,7 +26,7 @@ export function useTrafficData(): TrafficData {
 
   const fetchData = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/traffic-data');
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/traffic-data`);
       if (!res.ok) throw new Error('Backend error');
       const json = await res.json();
       setData({
