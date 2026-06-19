@@ -109,6 +109,7 @@ The backend serves both core operational endpoints and the new ParkIQ analytics:
 | `GET`  | `/api/parkiq/congestion-scores` | **ParkIQ:** BPR congestion impact scores per zone. |
 | `GET`  | `/api/parkiq/deterrence-decay` | **ParkIQ:** Historical deterrence decay curve data. |
 | `GET`  | `/api/parkiq/heatmap` | **ParkIQ:** Spatio-temporal heatmap intensity matrix. |
+| `GET`  | `/api/parkiq/repeat-offenders` | **ParkIQ:** Repeat offenders and violation share statistics. |
 
 ## 8. Screenshots
 
