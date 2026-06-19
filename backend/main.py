@@ -96,8 +96,13 @@ GEOFENCE_ZONES = {
     "Silk Board Junction": Polygon([(80, 120), (400, 120), (380, 360), (60, 360)]),
     "KR Market": Polygon([(50, 90), (350, 90), (330, 310), (30, 310)]),
     "MG Road": Polygon([(100, 100), (450, 100), (430, 380), (80, 380)]),
+    # Recalibrated against real YOLOv8 detections on the actual demo video
+    # (traffic.mp4, 624x352 native -> 640x480 after this app's resize) --
+    # lands on the right-lane auto-rickshaw cluster + roadside stall,
+    # matching the "right-side shoulder beyond the divider" zone used in
+    # the original SMC-Niyantran build.
+    "Right Side Shoulder": Polygon([(502, 34), (640, 34), (640, 436), (472, 436)])
 }
-
 # Phase 1: Dwell Timers
 DWELL_GRACE_SECONDS = 120
 STRICT_THRESHOLD_SECONDS = 180
@@ -106,18 +111,14 @@ STRICT_THRESHOLD_SECONDS = 180
 # Live-Configurable Settings
 # ─────────────────────────────────────────────
 settings = {
-    # Old rect fallback
-    "zone_x1":         460,
-    "zone_y1":          80,
-    "zone_x2":         650,
-    "zone_y2":         300,
+    # Rectangular fallback removed – zones are now polygon‑based only
     # YOLO confidence threshold
     "confidence":      0.35,
     # Priority Corridor Mode – overrides RL signal
     "yatra_mode":      False,
     "yatra_green_time": 45,     # seconds
     # Active junction label shown in HUD
-    "active_junction": "Silk Board Junction",
+    "active_junction": "Right Side Shoulder",
 }
 settings_lock = threading.Lock()
 
@@ -234,20 +235,18 @@ def compute_carbon_saved(count: int, green_time: int) -> float:
 # Helper: Frame Drawing
 # ─────────────────────────────────────────────
 
-def get_zone() -> tuple:
+def get_active_polygon() -> Polygon:
+    """Return the polygon for the currently active junction."""
     with settings_lock:
-        return (
-            settings["zone_x1"], settings["zone_y1"],
-            settings["zone_x2"], settings["zone_y2"],
-        )
+        junction = settings["active_junction"]
+    return GEOFENCE_ZONES.get(junction)
 
 def is_in_zone(cx: int, cy: int, zone: tuple, junction_name: str) -> bool:
     if junction_name in GEOFENCE_ZONES:
         poly = GEOFENCE_ZONES[junction_name]
         return poly.contains(Point(cx, cy))
     
-    x1, y1, x2, y2 = zone
-    return x1 <= cx <= x2 and y1 <= cy <= y2
+    return False
 
 def draw_zone(frame: np.ndarray, zone: tuple, junction_name: str) -> np.ndarray:
     overlay = frame.copy()
@@ -263,12 +262,8 @@ def draw_zone(frame: np.ndarray, zone: tuple, junction_name: str) -> np.ndarray:
         label_x, label_y = coords[0]
         label_y = label_y + 18
     else:
-        x1, y1, x2, y2 = zone
-        cv2.rectangle(overlay, (x1, y1), (x2, y2), (0, 100, 255), -1)
-        cv2.addWeighted(overlay, 0.18, frame, 0.82, 0, frame)
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 200, 255), 3)
-        label_x, label_y = x1, y1
-        label_y = y1 + 18 if y1 + 18 < y2 else y1 + 10
+        # No polygon defined for this junction; skip drawing
+        label_x, label_y = 0, 0
 
     cv2.putText(frame, "NO PARKING ZONE",
                 (label_x + 6, label_y),
@@ -406,7 +401,7 @@ def video_processing_loop():
             yatra_mode  = settings["yatra_mode"]
             yatra_gt    = settings["yatra_green_time"]
             junction    = settings["active_junction"]
-        zone = get_zone()
+        zone = get_active_polygon()
 
         results = model(frame, classes=VEHICLE_CLASSES,
                         conf=conf_thresh, verbose=False)
@@ -642,8 +637,11 @@ def system_stats():
 @app.post("/api/settings", summary="Update Live Settings")
 def update_settings(body: dict = Body(...)):
     allowed = {
-        "zone_x1", "zone_y1", "zone_x2", "zone_y2",
-        "confidence", "yatra_mode", "yatra_green_time", "active_junction",
+        "confidence",
+        "yatra_mode",
+        "yatra_green_time",
+        "active_junction",
+        "geofence_polygon"
     }
     updated = {}
     with settings_lock:
@@ -651,6 +649,15 @@ def update_settings(body: dict = Body(...)):
             if key in allowed:
                 settings[key] = val
                 updated[key]  = val
+                
+        # Update polygon logic
+        if "geofence_polygon" in body and "active_junction" in settings:
+            poly_points = body["geofence_polygon"]
+            junction = settings["active_junction"]
+            if len(poly_points) >= 3:
+                coords = [(int(p["x"]), int(p["y"])) for p in poly_points]
+                GEOFENCE_ZONES[junction] = Polygon(coords)
+                
     return JSONResponse({
         "status":  "ok",
         "updated": updated,

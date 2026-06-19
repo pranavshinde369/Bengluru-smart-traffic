@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { DashboardSidebar } from '@/components/DashboardSidebar';
 import { DashboardHeader } from '@/components/DashboardHeader';
-import { Wifi, Loader2, Camera, Info } from 'lucide-react';
+import { Wifi, Loader2, Camera, Info, Edit3 } from 'lucide-react';
 
 const cameras = [
   { id: '04', label: 'Camera 04 — Silk Board Junction' },
@@ -17,6 +17,40 @@ const CameraFeed = () => {
   const [fps, setFps] = useState(26);
   const [latency, setLatency] = useState(15);
   const [vehicleCount, setVehicleCount] = useState(0);
+
+  // Geofencing state
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [polygonPoints, setPolygonPoints] = useState<{x: number, y: number}[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!isDrawing) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.round((e.clientX - rect.left) / rect.width * 640);
+    const y = Math.round((e.clientY - rect.top) / rect.height * 480);
+    setPolygonPoints(prev => [...prev, { x, y }]);
+  };
+
+  const saveGeofence = async () => {
+    if (polygonPoints.length < 3) {
+      alert("Please draw at least 3 points to form a polygon.");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/settings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ geofence_polygon: polygonPoints })
+      });
+      setIsDrawing(false);
+      setPolygonPoints([]);
+    } catch (err) {
+      console.error("Failed to save geofence", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -93,9 +127,36 @@ const CameraFeed = () => {
               <h3 className="text-sm font-semibold text-foreground">
                 Live AI CCTV Feed — {cameras.find(c => c.id === selectedCamera)?.label}
               </h3>
-              <span className="text-xs bg-success/20 text-success px-2 py-0.5 rounded-full font-mono">
-                YOLOv8n Active
-              </span>
+              <div className="flex items-center gap-2">
+                {!isDrawing ? (
+                  <button
+                    onClick={() => setIsDrawing(true)}
+                    className="text-xs bg-primary/20 text-primary px-2 py-1 rounded flex items-center gap-1 hover:bg-primary/30 transition-colors"
+                  >
+                    <Edit3 className="w-3 h-3" /> Draw Geofence
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={saveGeofence}
+                      disabled={isSaving}
+                      className="text-xs bg-success/20 text-success px-2 py-1 rounded flex items-center gap-1 hover:bg-success/30 transition-colors"
+                    >
+                      {isSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wifi className="w-3 h-3 hidden" />}
+                      Save Zone
+                    </button>
+                    <button
+                      onClick={() => { setIsDrawing(false); setPolygonPoints([]); }}
+                      className="text-xs bg-alert/20 text-alert px-2 py-1 rounded flex items-center gap-1 hover:bg-alert/30 transition-colors"
+                    >
+                      <Wifi className="w-3 h-3 hidden" /> Cancel
+                    </button>
+                  </>
+                )}
+                <span className="text-xs bg-success/20 text-success px-2 py-0.5 rounded-full font-mono">
+                  YOLOv8n Active
+                </span>
+              </div>
             </div>
 
             <div className="relative w-full rounded-lg overflow-hidden bg-secondary" style={{ aspectRatio: '16/9', maxHeight: 480 }}>
@@ -114,17 +175,46 @@ const CameraFeed = () => {
                 />
               )}
 
+              {isDrawing && (
+                <svg 
+                  className="absolute inset-0 w-full h-full cursor-crosshair z-10" 
+                  viewBox="0 0 640 480"
+                  preserveAspectRatio="none"
+                  onClick={handleSvgClick}
+                >
+                  <rect width="640" height="480" fill="rgba(0,0,0,0.1)" />
+                  {polygonPoints.length > 0 && (
+                    <polygon
+                      points={polygonPoints.map(p => `${p.x},${p.y}`).join(' ')}
+                      fill="rgba(0, 100, 255, 0.2)"
+                      stroke="rgba(0, 200, 255, 0.8)"
+                      strokeWidth="3"
+                      strokeDasharray="5,5"
+                    />
+                  )}
+                  {polygonPoints.map((p, i) => (
+                    <circle key={i} cx={p.x} cy={p.y} r="5" fill="white" stroke="rgba(0, 200, 255, 0.8)" strokeWidth="2" />
+                  ))}
+                </svg>
+              )}
+
               {/* Scanline overlay */}
               <div className="absolute inset-0 pointer-events-none scanline-overlay" />
 
-              <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-background/70 backdrop-blur-sm px-2 py-1 rounded text-xs">
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-background/70 backdrop-blur-sm px-2 py-1 rounded text-xs z-20">
                 <span className="w-2 h-2 rounded-full bg-alert pulse-live" />
                 <span className="text-alert font-bold font-mono">LIVE</span>
               </div>
 
-              <div className="absolute bottom-3 right-3 bg-background/70 backdrop-blur-sm px-2 py-1 rounded text-xs text-muted-foreground font-mono">
+              <div className="absolute bottom-3 right-3 bg-background/70 backdrop-blur-sm px-2 py-1 rounded text-xs text-muted-foreground font-mono z-20">
                 {time.toLocaleTimeString()}
               </div>
+
+              {isDrawing && (
+                <div className="absolute bottom-3 left-3 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded text-xs text-foreground font-medium animate-pulse border border-primary/30 z-20 pointer-events-none">
+                  Click on the video to draw a No-Parking Zone polygon
+                </div>
+              )}
             </div>
           </div>
 

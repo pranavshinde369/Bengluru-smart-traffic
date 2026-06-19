@@ -134,4 +134,4 @@ The backend serves both core operational endpoints and the new ParkIQ analytics:
 This project is open-source and distributed under the **MIT License**.
 
 ## 12. Author / Credits
-**Team Name:** VYOMAN
+**Team Name:** VYOMAN.
