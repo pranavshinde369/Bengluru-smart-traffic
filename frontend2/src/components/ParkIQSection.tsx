@@ -35,7 +35,7 @@ export function ParkIQSection() {
 
   let peak = { day: '', hour: 0, intensity: -1 };
   let safest = { day: '', hour: 0, intensity: Infinity };
-  let dayTotals: Record<string, number> = {};
+  const dayTotals: Record<string, number> = {};
 
   if (heatmap) {
     heatmap.days.forEach((day: string, rIdx: number) => {
