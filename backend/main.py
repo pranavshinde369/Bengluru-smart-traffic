@@ -23,12 +23,22 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime, timedelta
 from collections import deque
+
+import torch
+_original_load = torch.load
+def _patched_load(*args, **kwargs):
+    if 'weights_only' not in kwargs:
+        kwargs['weights_only'] = False
+    return _original_load(*args, **kwargs)
+torch.load = _patched_load
+
 from ultralytics import YOLO
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 import math
 import random
+import json
 
 try:
     from shapely.geometry import Point, Polygon
@@ -174,6 +184,25 @@ def log_alert(zone: str, vehicle_count: int, status: str = "VIOLATION"):
 carbon_history = deque(maxlen=30)
 carbon_lock    = threading.Lock()
 _last_carbon_update = 0.0
+
+parkiq_cache = {}
+
+def _load_parkiq_data():
+    data_dir = Path(__file__).parent / "parkiq_data"
+    files = [
+        "clusters.json",
+        "congestion_scores.json",
+        "deterrence_decay.json",
+        "heatmap.json",
+        "repeat_offender_stats.json"
+    ]
+    for f in files:
+        path = data_dir / f
+        if path.exists():
+            with open(path, "r", encoding="utf-8") as file:
+                parkiq_cache[f] = json.load(file)
+        else:
+            parkiq_cache[f] = {}
 
 def _seed_carbon_history():
     np.random.seed(42)
@@ -523,6 +552,7 @@ def video_processing_loop():
 @app.on_event("startup")
 async def startup_event():
     _seed_carbon_history()
+    _load_parkiq_data()
     thread = threading.Thread(target=video_processing_loop, daemon=True)
     thread.start()
 
@@ -649,57 +679,26 @@ def get_geofence_zones():
     return JSONResponse({"zones": zones_json})
 
 
-@app.get("/api/parkiq/clusters", summary="Phase 3: HDBSCAN Clusters Stub")
+@app.get("/api/parkiq/clusters", summary="Phase 3: HDBSCAN Clusters")
 def get_parkiq_clusters():
-    return JSONResponse({
-        "clusters": [
-            {"id": 1, "lat": 12.9172, "lng": 77.6228, "zone": "Silk Board Junction", "weight": 0.85},
-            {"id": 2, "lat": 12.9557, "lng": 77.5746, "zone": "KR Market", "weight": 0.92},
-            {"id": 3, "lat": 12.9716, "lng": 77.5946, "zone": "MG Road", "weight": 0.76},
-        ]
-    })
+    return JSONResponse(parkiq_cache.get("clusters.json", {}))
 
 
 @app.get("/api/parkiq/congestion-scores", summary="Phase 3: BPR Congestion Impact Score")
 def get_parkiq_congestion_scores():
-    return JSONResponse({
-        "scores": [
-            {"zone": "Silk Board Junction", "bpr_score": 1.45, "capacity": 3000, "volume": 4200},
-            {"zone": "KR Market", "bpr_score": 1.62, "capacity": 2000, "volume": 3100},
-            {"zone": "MG Road", "bpr_score": 1.15, "capacity": 2500, "volume": 2600},
-        ]
-    })
+    return JSONResponse(parkiq_cache.get("congestion_scores.json", {}))
 
 
 @app.get("/api/parkiq/deterrence-decay", summary="Phase 3: Deterrence Decay Curve")
 def get_parkiq_deterrence_decay():
-    curve = []
-    base_violations = 150
-    for day in range(1, 31):
-        if day == 5:
-            base_violations = 40
-        elif day > 5:
-            base_violations += (150 - 40) / 10
-            if base_violations > 150: base_violations = 150
-        
-        curve.append({
-            "day": day,
-            "date": (datetime.now() - timedelta(days=30-day)).strftime("%Y-%m-%d"),
-            "violations": int(base_violations + random.uniform(-5, 5))
-        })
-    return JSONResponse({"decay_curve": curve})
+    return JSONResponse(parkiq_cache.get("deterrence_decay.json", {}))
 
 
 @app.get("/api/parkiq/heatmap", summary="Phase 3: Heatmap Matrix")
 def get_parkiq_heatmap():
-    zones = ["Silk Board Junction", "KR Market", "MG Road"]
-    heatmap = {}
-    for zone in zones:
-        matrix = []
-        for day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]:
-            for hour in range(24):
-                is_peak = (9 <= hour <= 11) or (17 <= hour <= 20)
-                intensity = random.randint(50, 100) if is_peak else random.randint(10, 40)
-                matrix.append({"day": day, "hour": f"{hour:02d}:00", "intensity": intensity})
-        heatmap[zone] = matrix
-    return JSONResponse({"heatmap": heatmap})
+    return JSONResponse(parkiq_cache.get("heatmap.json", {}))
+
+
+@app.get("/api/parkiq/repeat-offenders", summary="Phase 3: Repeat Offenders Stats")
+def get_parkiq_repeat_offenders():
+    return JSONResponse(parkiq_cache.get("repeat_offender_stats.json", {}))
